@@ -88,6 +88,9 @@ def get_activities():
     return activities
 
 
+def is_student_signed_up(activity_name: str, email: str) -> bool:
+    """Return True when the student is already registered for the activity."""
+    return email in activities[activity_name]["participants"]
 
 
 @app.post("/activities/{activity_name}/signup")
@@ -101,13 +104,7 @@ def signup_for_activity(activity_name: str, email: str):
     if is_student_signed_up(activity_name, email):
         raise HTTPException(status_code=400, detail="Student is already signed up for this activity")
 
-    # Get the specific activity
-    activity = activities[activity_name]
-
-    # Validate student is not already signed up
-    if email in activity["participants"]:
-        raise HTTPException(status_code=400, detail="Student is already signed up for this activity")   
-
     # Add student
+    activity = activities[activity_name]
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
